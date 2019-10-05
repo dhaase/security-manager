@@ -1,10 +1,13 @@
 package eu.dirk.haase.security.manager;
 
 import java.security.AccessControlContext;
+import java.security.AccessController;
 import java.security.Permission;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 abstract class SwitchableSecurityManager extends AbstractSecurityManager implements CheckerRunnable {
+    private static final Permission SWITCH_CHECK_DEFAULT_PERMISSION = new RuntimePermission("switchCheckDefault");
+    private static final Permission SWITCH_CHECK_THREAD_PERMISSION = new RuntimePermission("switchCheckOnCurrentThread");
 
     private final AtomicBoolean defaultCheckFlag;
 
@@ -35,10 +38,12 @@ abstract class SwitchableSecurityManager extends AbstractSecurityManager impleme
     }
 
     public final void switchCheckDefault(final boolean doCheckFlag) {
+        AccessController.checkPermission(SWITCH_CHECK_DEFAULT_PERMISSION);
         this.defaultCheckFlag.set(doCheckFlag);
     }
 
     public final void switchCheckOnCurrentThread(final boolean doCheckFlag) {
+        AccessController.checkPermission(SWITCH_CHECK_THREAD_PERMISSION);
         final AccessContext ac = new AccessContext();
         ac.checking = doCheckFlag;
         this.threadLocalAccessContext.set(ac);

@@ -28,7 +28,7 @@ public class FinalPolicy extends Policy {
     private boolean skipDefaultPolicies;
     private List<PolicyEntry> allDenyEntries;
     private List<PolicyEntry> allGrantEntries;
-    private Reader policyReader;
+    private String policyCode;
     private Priority priority; // true for grant, false for deny
 
     /**
@@ -82,9 +82,9 @@ public class FinalPolicy extends Policy {
         refresh();
     }
 
-    public FinalPolicy(final Reader policyReader) {
+    public FinalPolicy(final String policyCode) {
         this(false);
-        this.policyReader = policyReader;
+        this.policyCode = policyCode;
         this.skipDefaultPolicies = true;
         this.policyFile = null;
         refresh();
@@ -585,6 +585,8 @@ public class FinalPolicy extends Policy {
     @Override
     public boolean implies(ProtectionDomain protectionDomain, Permission permission) {
 
+        System.out.println("Policy.implies: " + permission + "; code " + protectionDomain.getCodeSource());
+
         // this should never happen
         if (protectionDomain == null) {
             return false;
@@ -878,7 +880,7 @@ public class FinalPolicy extends Policy {
      */
     @Override
     public void refresh() {
-        Reader currReader = policyReader;
+        Reader currReader = new StringReader(policyCode);
         if (policyFile != null) {
             try {
                 currReader = new FileReader(policyFile);

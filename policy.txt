@@ -1,0 +1,11 @@
+
+grant codeBase "file:${{java.ext.dirs}}/*" {
+    permission eu.dirk.haase.security.policy.MyPermission "my-perm";
+};
+
+
+grant {
+    permission eu.dirk.haase.security.policy.MyPermission "my-perm";
+};
+
+

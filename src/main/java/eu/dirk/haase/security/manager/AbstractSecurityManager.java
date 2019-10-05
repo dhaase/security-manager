@@ -5,12 +5,16 @@ import java.net.InetAddress;
 import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.Permission;
+import java.security.SecurityPermission;
 
 
 abstract class AbstractSecurityManager extends SecurityManager {
 
     private static final Permission CREATE_SECURITY_MANAGER_PERMISSION = new RuntimePermission("setSecurityManager");
+    private static final Permission SET_POLICY_PERMISSION = new SecurityPermission("setPolicy");
     private static final Permission SET_SECURITY_MANAGER_PERMISSION = new RuntimePermission("setSecurityManager");
+    private static final ThreadLocal<Boolean> inTrustedCode = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
 
     public AbstractSecurityManager() {
         super();
@@ -156,14 +160,24 @@ abstract class AbstractSecurityManager extends SecurityManager {
     }
 
     public final void checkPermission(final Permission perm, final AccessControlContext context) {
-        if (doCheck()) {
-            if (perm.implies(SET_SECURITY_MANAGER_PERMISSION)) {
-                throw new SecurityException("Security manager may not be changed");
-            }
-            if (perm.implies(CREATE_SECURITY_MANAGER_PERMISSION)) {
-                throw new SecurityException("Security manager may not be created");
-            }
-            checkPermissionInternal(perm, context);
+        try {
+//            if (!inTrustedCode.get()) {
+//                inTrustedCode.set(Boolean.TRUE);
+                if (doCheck()) {
+                    if (perm.implies(SET_SECURITY_MANAGER_PERMISSION)) {
+                        throw new SecurityException("Security manager may not be changed");
+                    }
+                    if (perm.implies(SET_POLICY_PERMISSION)) {
+                        throw new SecurityException("Policy may not be changed");
+                    }
+                    if (perm.implies(CREATE_SECURITY_MANAGER_PERMISSION)) {
+                        throw new SecurityException("Security manager may not be created");
+                    }
+                    checkPermissionInternal(perm, context);
+                }
+ //           }
+        } finally {
+//            inTrustedCode.set(Boolean.FALSE);
         }
     }
 
