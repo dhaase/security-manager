@@ -12,6 +12,7 @@ public class AesCbcWithIntegritySample {
 
         //store or send to server
         String cipherTextString = cipherTextIvMac1.toString();
+        System.out.println(cipherTextString);
 
         //Use the constructor to re-create the CipherTextIvMac class from the string:
         AesCbcWithIntegrity.CipherTextIvMac cipherTextIvMac2 = new AesCbcWithIntegrity.CipherTextIvMac(cipherTextString);

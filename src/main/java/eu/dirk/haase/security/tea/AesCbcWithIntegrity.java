@@ -494,17 +494,22 @@ public class AesCbcWithIntegrity {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             SecretKeys other = (SecretKeys) obj;
-            if (!integrityKey.equals(other.integrityKey))
+            if (!integrityKey.equals(other.integrityKey)) {
                 return false;
-            if (!confidentialityKey.equals(other.confidentialityKey))
+            }
+            if (!confidentialityKey.equals(other.confidentialityKey)) {
                 return false;
+            }
             return true;
         }
 
